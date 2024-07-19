@@ -15,10 +15,12 @@ public:
 	// Sets default values for this character's properties
 	AMGCharacter();
 
+	virtual void BeginPlay() override;
+
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "Parameters")
 	float Dash_Force = 300;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Parameters")
 	bool pCanDash = true;
 	
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "Parameters")
@@ -37,6 +39,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Pitch")
 	float pRepPitch;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Pitch")
+	float pRepYaw;
+
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void Pure_Dash( FVector Direction);
 
@@ -52,10 +57,10 @@ public:
 
 protected:
 	UFUNCTION(Server, Reliable, Category= "Replication" )
-	void Server_RepPitch(const float& Pitch);
+	void Server_RepPitch(const float& Pitch, const float& Yaw);
 
 	UFUNCTION(NetMulticast, Reliable, Category= "Replication" )
-	void Multi_RepPitch(const float& Pitch);
+	void Multi_RepPitch(const float& Pitch, const float& Yaw);
 
 	UFUNCTION(Server, Reliable, Category = "Replication" )
 	void Server_Dash(const FVector Direction);
@@ -65,7 +70,8 @@ protected:
 
 	UFUNCTION(Server, Reliable, Category = "Replication" )
 	void Server_SetDash();
-	
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
 
